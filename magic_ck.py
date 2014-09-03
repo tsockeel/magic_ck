@@ -4,7 +4,7 @@ import cv2
 
 
 def colorclose(Cb_p,Cr_p, Cb_key, Cr_key, tola, tolb):
-	temp = math.sqrt((Cb_key-Cb_p)**2+(Cr_key-Cr_p)**2)
+	temp = ((Cb_key-Cb_p)**2+(Cr_key-Cr_p)**2) **0.5
 	if temp < tola:
 		z= 0.0
 	elif temp < tolb:
@@ -59,29 +59,22 @@ def magic(inImg, inbg , keyColor=None, tolerance = None):
 
 
 
-def testPicture():
+def testPicture(background, inputPic, outputFileName = 'testPicture_out.png'):
 
-	a0 = cv2.getTickCount()
-	ainImg = cv2.imread('bgInCol.jpg',1)
-	abgImg = cv2.imread('colombia_640.png',1)
+	t1 = cv2.getTickCount()
 
-	a1 = cv2.getTickCount()
-	print 'loading in {0} s'.format((a1 - a0)/cv2.getTickFrequency())
+	output = magic(inputPic,background)#, tolerance=[10,20])
 
-	aoutput = magic(ainImg,abgImg)#, tolerance=[10,20])
+	t2 = cv2.getTickCount()
+	print 'testPicture processed in {0} s'.format((t2 - t1)/cv2.getTickFrequency())
 
-	a2 = cv2.getTickCount()
-	print 'testPicture processed in {0} s'.format((a2 - a1)/cv2.getTickFrequency())
-
-	cv2.imwrite('outa.png', aoutput)
+	cv2.imwrite(outputFileName, output)
 
 
-if __name__ == '__main__':
 
-	#testPicture()
+def testWebcam(background):
 
-	background = cv2.imread('colombia_640.png',1)
-
+	# capture object
 	cap = cv2.VideoCapture(0)
 
 	while(True):
@@ -101,3 +94,16 @@ if __name__ == '__main__':
 	# When everything done, release the capture
 	cap.release()
 	cv2.destroyAllWindows()
+
+
+
+
+
+
+if __name__ == '__main__':
+
+	background = cv2.imread('colombia_640.png',1)
+	inputPic = cv2.imread('bgInCol.jpg',1)
+
+	testPicture(background, inputPic)
+	testWebcam(background)
